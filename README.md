@@ -10,3 +10,38 @@
 ## Technologies
 
 - GraphQL
+
+## Entities
+
+- User
+- Blog
+- Comment
+- Like
+
+## Blog Schema
+
+- id
+- title
+- content
+- authorId
+- createdAt
+- updatedAt
+- published
+
+## User Schema
+
+- id
+- name
+- email
+- password
+- createdAt
+- updatedAt
+
+## Profile
+
+- id
+- userId
+- avatar
+- bio
+- createdAt
+- updatedAt

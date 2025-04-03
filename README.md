@@ -45,3 +45,9 @@
 - bio
 - createdAt
 - updatedAt
+
+## To run the prisma studio with custom named env file
+
+```bash
+npx dotenv-cli -e .env.development.local -- npx prisma studio
+```

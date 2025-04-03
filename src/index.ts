@@ -4,31 +4,40 @@
 |------------------------------------------------------------------------------
 | Title: Blog App GraphQL Server
 | Description: A GraphQL server for the Blog app
-| Author: Noyon Rahaman
+| Author: Noyon Rahman
 | Date: 2025-04-02
-| Technologies: Node.js, Express, Apollo Server, GraphQL
+| Technologies: Node.js, Express, Apollo Server, GraphQL, Prisma, PostgreSQL
 |------------------------------------------------------------------------------
 */
 
 import { ApolloServer } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
-import { typeDefs } from "./graphql/schema";
-import resolvers from "./graphql/resolvers";
 import "./config";
-// The ApolloServer constructor requires two parameters: your schema
-// definition and your set of resolvers.
-// The ApolloServer constructor requires two parameters: your schema
-// definition and your set of resolvers.
+import resolvers from "./graphql/resolvers";
+import { typeDefs } from "./graphql/schema";
+
 async function init() {
   const server = new ApolloServer({
     typeDefs,
     resolvers,
+    formatError(formattedError, _error) {
+      // // Check if the error is a GraphQLError
+      // if (error instanceof GraphQLError) {
+      //   // You can access the original error if it exists
+      //   const originalError = error.originalError;
+      //   // Check if the original error is an instance of AppError
+      //   if (originalError instanceof AppError) {
+      //     return {
+      //       message: originalError.message,
+      //       statusCode: originalError.statusCode,
+      //     };
+      //   }
+      // }
+
+      return formattedError;
+    },
   });
 
-  // Passing an ApolloServer instance to the `startStandaloneServer` function:
-  //  1. creates an Express app
-  //  2. installs your ApolloServer instance as middleware
-  //  3. prepares your app to handle incoming requests
   const { url } = await startStandaloneServer(server, {
     listen: { port: 4000 },
   });

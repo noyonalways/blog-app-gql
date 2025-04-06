@@ -40,6 +40,11 @@ async function init() {
 
   const { url } = await startStandaloneServer(server, {
     listen: { port: 4000 },
+    context: async ({ req }) => {
+      return {
+        token: req.headers.authorization,
+      };
+    },
   });
 
   console.log(`🚀  Server ready at: ${url}`);

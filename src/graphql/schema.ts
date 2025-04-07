@@ -2,11 +2,13 @@ export const typeDefs = `#graphql
 
   type Query {
     getBlogs: [Blog]
+    getMe: User
   }
 
   type Mutation {
     register(name: String!, email: String!, password: String!): AuthPayload
     login(email: String!, password: String!): AuthPayload
+    updateProfile(payload: ProfileInput): Profile
     createBlog(payload: BlogInput!): Blog
     updateBlog(id: ID!, payload: BlogInput): Blog
     deleteBlog(id: ID!): Message
@@ -50,5 +52,10 @@ export const typeDefs = `#graphql
   input BlogInput {
     title: String
     content: String
+  }
+
+  input ProfileInput {
+    avatar: String
+    bio: String
   }
 `;

@@ -15,3 +15,8 @@ export type TDecodedToken = {
   iat: number;
   exp: number;
 };
+
+export type TUserProfilePayload = {
+  avatar: string;
+  bio: string;
+};

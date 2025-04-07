@@ -4,13 +4,13 @@ import { TAuthContext } from "../../../types/auth";
 import { TDecodedToken } from "../../../types/user";
 import { verifyToken } from "../../../utils";
 
-export const blogResolver = {
+export const authResolver = {
   /* 
   |--------------------------------------------
-  | Get all blogs - logged in user blogs
+  | Get the current user
   |--------------------------------------------
   */
-  getBlogs: async (
+  getMe: async (
     _parent: unknown,
     _args: unknown,
     { prisma, token }: TAuthContext,
@@ -18,22 +18,14 @@ export const blogResolver = {
     if (!token) {
       throw new AppError(401, "Unauthorized");
     }
-
     const decoded = verifyToken(token, config.JWT_SECRET!) as TDecodedToken;
     const user = await prisma.user.findUnique({
       where: { id: decoded.id },
-    });
-
-    if (!user) {
-      throw new AppError(404, "User not found");
-    }
-
-    const blogs = await prisma.blog.findMany({
-      where: { authorId: user.id },
       include: {
-        author: true,
+        profile: true,
+        blogs: true,
       },
     });
-    return blogs;
+    return user;
   },
 };

@@ -15,6 +15,7 @@ import { startStandaloneServer } from "@apollo/server/standalone";
 import "./config";
 import resolvers from "./graphql/resolvers";
 import { typeDefs } from "./graphql/schema";
+import prisma from "./lib/db";
 
 async function init() {
   const server = new ApolloServer({
@@ -42,6 +43,7 @@ async function init() {
     listen: { port: 4000 },
     context: async ({ req }) => {
       return {
+        prisma,
         token: req.headers.authorization,
       };
     },

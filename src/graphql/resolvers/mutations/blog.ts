@@ -1,20 +1,20 @@
 import config from "../../../config";
 import AppError from "../../../errors/AppError";
-import prisma from "../../../lib/db";
+import { TAuthContext } from "../../../types/auth";
 import { TCreateBlogPayload, TUpdateBlogPayload } from "../../../types/blog";
 import { TDecodedToken } from "../../../types/user";
 import { verifyToken } from "../../../utils";
 
 export const blogResolver = {
   /* 
-    |--------------------------------------------
-    | Create a new blog
-    |--------------------------------------------
-    */
+  |--------------------------------------------
+  | Create a new blog
+  |--------------------------------------------
+  */
   createBlog: async (
     _parent: unknown,
     { payload }: { payload: TCreateBlogPayload },
-    { token }: { token: string | undefined },
+    { prisma, token }: TAuthContext,
   ) => {
     const { title, content } = payload;
 
@@ -48,14 +48,14 @@ export const blogResolver = {
   },
 
   /* 
-    |--------------------------------------------
-    | Update a blog
-    |--------------------------------------------
-    */
+  |--------------------------------------------
+  | Update a blog
+  |--------------------------------------------
+  */
   updateBlog: async (
     _parent: unknown,
     { id, payload }: { id: string; payload: TUpdateBlogPayload },
-    { token }: { token: string | undefined },
+    { prisma, token }: TAuthContext,
   ) => {
     const { title, content } = payload || {};
 
@@ -94,14 +94,14 @@ export const blogResolver = {
   },
 
   /* 
-    |--------------------------------------------
-    | Delete a blog
-    |--------------------------------------------
-    */
+  |--------------------------------------------
+  | Delete a blog
+  |--------------------------------------------
+  */
   deleteBlog: async (
     _parent: unknown,
     { id }: { id: string },
-    { token }: { token: string | undefined },
+    { prisma, token }: TAuthContext,
   ) => {
     if (!token) {
       throw new AppError(401, "Unauthorized");

@@ -11,6 +11,7 @@
     "format:check": "prettier ./src --check",
     "lint": "eslint ./src",
     "lint:fix": "eslint ./src --fix",
+    "prisma:migrate": "npx dotenv-cli -e .env.development.local -- npx prisma migrate dev",
     "prisma:studio": "npx dotenv-cli -e .env.development.local -- npx prisma studio",
     "prepare": "husky"
   },

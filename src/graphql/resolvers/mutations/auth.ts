@@ -2,15 +2,21 @@ import bcrypt from "bcrypt";
 import config from "../../../config";
 import AppError from "../../../errors/AppError";
 import prisma from "../../../lib/db";
-import { TUserLoginPayload, TUserRegisterPayload } from "../../../types/user";
-import { generateToken } from "../../../utils";
+import { TAuthContext } from "../../../types/auth";
+import {
+  TDecodedToken,
+  TUserLoginPayload,
+  TUserProfilePayload,
+  TUserRegisterPayload,
+} from "../../../types/user";
+import { generateToken, verifyToken } from "../../../utils";
 
 export const authResolver = {
   /* 
-    |--------------------------------------------
-    | Register a new user
-    |--------------------------------------------
-    */
+  |--------------------------------------------
+  | Register a new user
+  |--------------------------------------------
+  */
   register: async (_parent: unknown, args: TUserRegisterPayload) => {
     const existingUser = await prisma.user.findUnique({
       where: {
@@ -49,16 +55,14 @@ export const authResolver = {
   },
 
   /* 
-    |--------------------------------------------
-    | Login a user
-    |--------------------------------------------
-    */
+  |--------------------------------------------
+  | Login a user
+  |--------------------------------------------
+  */
   login: async (_parent: unknown, args: TUserLoginPayload) => {
     const user = await prisma.user.findUnique({
       where: { email: args.email },
     });
-
-    console.log(args);
 
     if (!user) {
       throw new AppError(404, "User not found");
@@ -76,5 +80,46 @@ export const authResolver = {
       { expiresIn: "1d" },
     );
     return { token, message: "Login successful" };
+  },
+
+  /* 
+  |--------------------------------------------
+  | Update the login user profile
+  |--------------------------------------------
+  */
+  updateProfile: async (
+    _parent: unknown,
+    { payload }: { payload: TUserProfilePayload },
+    { prisma, token }: TAuthContext,
+  ) => {
+    if (!token) {
+      throw new AppError(401, "Unauthorized");
+    }
+
+    const decoded = verifyToken(token, config.JWT_SECRET!) as TDecodedToken;
+
+    const user = await prisma.user.findUnique({
+      where: { id: decoded.id },
+    });
+
+    if (!user) {
+      throw new AppError(404, "User not found");
+    }
+
+    const { bio, avatar } = payload || {};
+
+    if (!bio && !avatar) {
+      throw new AppError(400, "No valid fields to update");
+    }
+
+    const updatedProfile = await prisma.profile.update({
+      where: { userId: user.id },
+      data: { bio, avatar },
+      include: {
+        user: true,
+      },
+    });
+
+    return updatedProfile;
   },
 };

@@ -20,3 +20,13 @@ export type TUserProfilePayload = {
   avatar: string;
   bio: string;
 };
+
+export type TUser = {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  name: string;
+  email: string;
+  password: string;
+  role: string;
+};

@@ -1,9 +1,6 @@
-import config from "../../../config";
 import AppError from "../../../errors/AppError";
 import { TAuthContext } from "../../../types/auth";
 import { TCreateBlogPayload, TUpdateBlogPayload } from "../../../types/blog";
-import { TDecodedToken } from "../../../types/user";
-import { verifyToken } from "../../../utils";
 
 export const blogResolver = {
   /* 
@@ -14,18 +11,16 @@ export const blogResolver = {
   createBlog: async (
     _parent: unknown,
     { payload }: { payload: TCreateBlogPayload },
-    { prisma, token }: TAuthContext,
+    { prisma, userInfo }: TAuthContext,
   ) => {
     const { title, content } = payload;
 
-    if (!token) {
+    if (!userInfo) {
       throw new AppError(401, "Unauthorized");
     }
 
-    const decoded = verifyToken(token, config.JWT_SECRET!) as TDecodedToken;
-
     const user = await prisma.user.findUnique({
-      where: { id: decoded.id },
+      where: { id: userInfo.id },
     });
 
     if (!user) {
@@ -55,18 +50,16 @@ export const blogResolver = {
   updateBlog: async (
     _parent: unknown,
     { id, payload }: { id: string; payload: TUpdateBlogPayload },
-    { prisma, token }: TAuthContext,
+    { prisma, userInfo }: TAuthContext,
   ) => {
     const { title, content } = payload || {};
 
-    if (!token) {
+    if (!userInfo) {
       throw new AppError(401, "Unauthorized");
     }
 
-    const decoded = verifyToken(token, config.JWT_SECRET!) as TDecodedToken;
-
     const user = await prisma.user.findUnique({
-      where: { id: decoded.id },
+      where: { id: userInfo.id },
     });
 
     if (!user) {
@@ -101,16 +94,14 @@ export const blogResolver = {
   deleteBlog: async (
     _parent: unknown,
     { id }: { id: string },
-    { prisma, token }: TAuthContext,
+    { prisma, userInfo }: TAuthContext,
   ) => {
-    if (!token) {
+    if (!userInfo) {
       throw new AppError(401, "Unauthorized");
     }
 
-    const decoded = verifyToken(token, config.JWT_SECRET!) as TDecodedToken;
-
     const user = await prisma.user.findUnique({
-      where: { id: decoded.id },
+      where: { id: userInfo.id },
     });
 
     if (!user) {

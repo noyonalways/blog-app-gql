@@ -1,8 +1,5 @@
-import config from "../../../config";
 import AppError from "../../../errors/AppError";
 import { TAuthContext } from "../../../types/auth";
-import { TDecodedToken } from "../../../types/user";
-import { verifyToken } from "../../../utils";
 
 export const authResolver = {
   /* 
@@ -13,19 +10,29 @@ export const authResolver = {
   getMe: async (
     _parent: unknown,
     _args: unknown,
-    { prisma, token }: TAuthContext,
+    { prisma, userInfo }: TAuthContext,
   ) => {
-    if (!token) {
+    if (!userInfo) {
       throw new AppError(401, "Unauthorized");
     }
-    const decoded = verifyToken(token, config.JWT_SECRET!) as TDecodedToken;
-    const user = await prisma.user.findUnique({
-      where: { id: decoded.id },
+    const userDetails = await prisma.user.findUnique({
+      where: { id: userInfo?.id },
       include: {
         profile: true,
-        blogs: true,
+        blogs: {
+          where: { status: "published" },
+          include: {
+            author: true,
+          },
+          orderBy: [
+            {
+              updatedAt: "desc",
+            },
+          ],
+          take: 10,
+        },
       },
     });
-    return user;
+    return userDetails;
   },
 };

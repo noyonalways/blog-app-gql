@@ -3,6 +3,7 @@ export const typeDefs = `#graphql
   type Query {
     getBlogs: [Blog]
     getMe: User
+    getProfile: Profile
   }
 
   type Mutation {

@@ -4,12 +4,11 @@ import AppError from "../../../errors/AppError";
 import prisma from "../../../lib/db";
 import { TAuthContext } from "../../../types/auth";
 import {
-  TDecodedToken,
   TUserLoginPayload,
   TUserProfilePayload,
   TUserRegisterPayload,
 } from "../../../types/user";
-import { generateToken, verifyToken } from "../../../utils";
+import { generateToken } from "../../../utils";
 
 export const authResolver = {
   /* 
@@ -90,16 +89,14 @@ export const authResolver = {
   updateProfile: async (
     _parent: unknown,
     { payload }: { payload: TUserProfilePayload },
-    { prisma, token }: TAuthContext,
+    { prisma, userInfo }: TAuthContext,
   ) => {
-    if (!token) {
+    if (!userInfo) {
       throw new AppError(401, "Unauthorized");
     }
 
-    const decoded = verifyToken(token, config.JWT_SECRET!) as TDecodedToken;
-
     const user = await prisma.user.findUnique({
-      where: { id: decoded.id },
+      where: { id: userInfo.id },
     });
 
     if (!user) {

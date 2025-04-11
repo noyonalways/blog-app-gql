@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
+import { TDecodedToken } from "./user";
 
 export type TAuthContext = {
   prisma: PrismaClient;
-  token: string | undefined;
+  userInfo: TDecodedToken | null;
 };

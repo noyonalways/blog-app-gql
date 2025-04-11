@@ -37,4 +37,28 @@ export const blogResolver = {
     });
     return blogs;
   },
+
+  /* 
+  |--------------------------------------------
+  | Get all blogs - for admin
+  |--------------------------------------------
+  */
+  getAllBlogs: async (
+    _parent: unknown,
+    _args: unknown,
+    { prisma }: TAuthContext,
+  ) => {
+    console.log("blog data");
+    const blogs = await prisma.blog.findMany({
+      include: {
+        author: true,
+      },
+      orderBy: [
+        {
+          updatedAt: "desc",
+        },
+      ],
+    });
+    return blogs;
+  },
 };

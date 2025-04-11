@@ -2,6 +2,7 @@ export const typeDefs = `#graphql
 
   type Query {
     getBlogs: [Blog]
+    getAllBlogs: [Blog]
     getMe: User
     getProfile: Profile
   }

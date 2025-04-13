@@ -1,4 +1,4 @@
-import { TAuthContext } from "../../types/auth";
+import { userLoader } from "../../dataLoaders/useLoader";
 
 export const Blog = {
   /* 
@@ -9,12 +9,13 @@ export const Blog = {
   author: async (
     parent: { authorId: string },
     _args: unknown,
-    { prisma }: TAuthContext,
+    // { prisma }: TAuthContext,
   ) => {
-    return await prisma.user.findUnique({
-      where: {
-        id: parent.authorId,
-      },
-    });
+    return userLoader.load(parent.authorId);
+    // return await prisma.user.findUnique({
+    //   where: {
+    //     id: parent.authorId,
+    //   },
+    // });
   },
 };

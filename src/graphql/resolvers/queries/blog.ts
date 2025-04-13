@@ -48,7 +48,6 @@ export const blogResolver = {
     _args: unknown,
     { prisma }: TAuthContext,
   ) => {
-    console.log("blog data");
     const blogs = await prisma.blog.findMany({
       include: {
         author: true,
